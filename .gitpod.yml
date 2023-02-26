@@ -65,14 +65,14 @@ ports:
 tasks:
     - name: Docker
       init: |
-        docker-compose pull &&
+        docker compose pull &&
         gp sync-done docker-pull
       command: |
-        docker-compose up
+        docker compose up
     - name: Install Sulu Demo
       init: |
         gp sync-await docker-pull &&
-        docker-compose up -d &&
+        docker compose up -d &&
         gp ports await 9200 &&
         gp ports await 3306 &&
         chmod +x ./.devEnv/gitpod/scripts/install_sulu_demo.sh &&
