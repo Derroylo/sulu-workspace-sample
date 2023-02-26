@@ -3,7 +3,7 @@ ARG COMPOSER_VERSION="2.2"
 
 FROM composer:${COMPOSER_VERSION} AS composer_binary
 
-FROM gitpod/workspace-base
+FROM gitpod/workspace-base:2023-01-10-16-35-53
 
 # Arguments
 ARG NODE_VERSION=16
