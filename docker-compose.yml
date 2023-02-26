@@ -55,19 +55,6 @@ services:
       ports:
         - "8081:80"
 
-    # PhpCacheAdmin
-    # For more infos check: https://hub.docker.com/r/robinn/phpcacheadmin
-    phpcacheadmin:
-      image: robinn/phpcacheadmin:1.4.1
-      container_name: "phpcacheadmin"
-      ports:
-        - "8082:80"
-      environment:
-        - PCA_REDIS_0_HOST=redis
-        - PCA_REDIS_0_PORT=6379
-      links:
-        - redis
-
     # Elasticsearch
     # For more infos check: https://hub.docker.com/_/elasticsearch
     elasticsearch:
@@ -83,6 +70,19 @@ services:
         ELASTIC_PASSWORD: 'gitpod'
       volumes:
         - elasticsearch-data:/usr/share/elasticsearch/data
+
+    # PhpCacheAdmin
+    # For more infos check: https://hub.docker.com/r/robinn/phpcacheadmin
+    phpcacheadmin:
+      image: robinn/phpcacheadmin
+      container_name: "pca"
+      ports:
+        - "8082:80"
+      environment:
+        - PCA_REDIS_0_HOST=redis
+        - PCA_REDIS_0_PORT=6379
+      links:
+        - redis
 
 volumes:
   elasticsearch-data:
