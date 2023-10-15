@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+# Infos for GitpodTool
+#
+# gptBranch: sulu
+# gptBranchDescription: Commands for sulu
+# gptCommand: install_demo
+# gptDescription: Installs the sulu demo
+
 if [ -d "vendor" ]; then
     echo "Sulu is already installed!"
     exit 0
