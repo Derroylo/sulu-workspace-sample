@@ -19,8 +19,8 @@ ports:
   - port: 8025
     onOpen: ignore
     visibility: private
-    name: Mailhog
-    description: Shows the Webinterface for Mailhog
+    name: Mailpit
+    description: Shows the Webinterface for Mailpit
   - port: 8081
     onOpen: ignore
     visibility: private
@@ -44,7 +44,7 @@ ports:
   - port: 1025
     onOpen: ignore
     visibility: private
-    name: Mailhog Mailserver
+    name: Mailpit Mailserver
     description: Endpoint for the Mailserver
   - port: 3306
     onOpen: ignore
@@ -63,21 +63,17 @@ ports:
 # Define tasks that should be executed
 # Documentation: https://www.gitpod.io/docs/configure/workspaces/tasks
 tasks:
-    - name: Docker
+    - name: Docker Services and Sulu Install
+      before: |
+        gpt restore all
       init: |
-        docker compose pull &&
-        gp sync-done docker-pull
-      command: |
-        docker compose up
-    - name: Install Sulu Demo
-      init: |
-        gp sync-await docker-pull &&
-        docker compose up -d &&
+        gpt services start -d &&
         gp ports await 9200 &&
         gp ports await 3306 &&
-        chmod +x ./.devEnv/gitpod/scripts/install_sulu_demo.sh &&
-        ./.devEnv/gitpod/scripts/install_sulu_demo.sh
-      command: gp sync-done sulu-install
+        gpt sulu install_demo
+      command: |
+        gp sync-done sulu-install &&
+        gpt services start
     - name: Apache
       command: |
         gp sync-await sulu-install &&

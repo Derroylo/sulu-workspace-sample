@@ -4,6 +4,8 @@ services:
     # MySql Server
     # For more infos check: https://hub.docker.com/_/mysql/
     mysql:
+      labels:
+        com.gitpod.gpt.category: "database"
       image: mysql:5.7
       container_name: "mysql"
       ports:
@@ -11,18 +13,16 @@ services:
         - 3306:3306
       environment:
         # mysql root password
-        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-gitpod}
-        # create the database
-        - MYSQL_DATABASE=${MYSQL_DATABASE:-demo}
+        - MYSQL_ROOT_PASSWORD=gitpod
       command: [mysqld, --query-cache-type=1, --query_cache_size=128M, --query_cache_limit=16M, --key_buffer_size=16M, --table_open_cache=64, --sort_buffer_size=512K, --net_buffer_length=8K, --read_buffer_size=256K, --read_rnd_buffer_size=512K, --myisam_sort_buffer_size=8M]
-      volumes:
-        - mysql-data:/var/lib/mysql
 
-    # Mailhog (can fetch all outgoing mails and show them via webinterface)
-    # For more infos check: https://hub.docker.com/r/mailhog/mailhog/
-    mailhog:
-      image: mailhog/mailhog:latest
-      container_name: "mailhog"
+    # Mailpit (can fetch all outgoing mails and show them via webinterface)
+    # For more infos check: https://hub.docker.com/r/axllent/mailpit
+    mailpit:
+      labels:
+        com.gitpod.gpt.category: "mail"
+      image: axllent/mailpit:latest
+      container_name: "mailpit"
       ports:
         # make this port public for the webinterface
         - 8025:8025
@@ -32,14 +32,36 @@ services:
     # Redis Server
     # For more infos check: https://hub.docker.com/_/redis
     redis:
+      labels:
+        com.gitpod.gpt.category: "cache"
       image: redis:latest
       container_name: "redis"
       ports:
         - 6379:6379
 
+    # Elasticsearch
+    # For more infos check: https://hub.docker.com/_/elasticsearch
+    elasticsearch:
+      labels:
+        com.gitpod.gpt.category: "search"
+      image: elasticsearch:7.17.6
+      container_name: "es"
+      mem_limit: "1g"
+      mem_reservation: "512m"
+      ports:
+        - 9200:9200
+      environment:
+        discovery.type: single-node
+        xpack.security.enabled: 'false'
+        ELASTIC_PASSWORD: 'gitpod'
+      volumes:
+        - elasticsearch-data:/usr/share/elasticsearch/data
+
     # PhpMyAdmin
     # For more infos check: https://hub.docker.com/_/phpmyadmin
     phpmyadmin:
+      labels:
+        com.gitpod.gpt.category: "tools"
       image: phpmyadmin/phpmyadmin:latest
       container_name: "pma"
       restart: always
@@ -54,28 +76,22 @@ services:
         PMA_PMADB: "pma"
       ports:
         - "8081:80"
-
-    # Elasticsearch
-    # For more infos check: https://hub.docker.com/_/elasticsearch
-    elasticsearch:
-      image: elasticsearch:7.17.6
-      container_name: "es"
-      mem_limit: "1g"
-      mem_reservation: "512m"
-      ports:
-        - 9200:9200
-      environment:
-        discovery.type: single-node
-        xpack.security.enabled: 'false'
-        ELASTIC_PASSWORD: 'gitpod'
       volumes:
-        - elasticsearch-data:/usr/share/elasticsearch/data
+        - /tmp/apache2/logs:/var/log/apache2
 
     # PhpCacheAdmin
     # For more infos check: https://hub.docker.com/r/robinn/phpcacheadmin
     phpcacheadmin:
+      labels:
+        com.gitpod.gpt.category: "tools"
       image: robinn/phpcacheadmin
-
-volumes:
-  elasticsearch-data:
-  mysql-data:
+      container_name: "phpcacheadmin"
+      ports:
+        - "8082:80"
+      environment:
+        - PCA_REDIS_0_HOST=redis
+        - PCA_REDIS_0_PORT=6379
+      links:
+        - redis
+      volumes:
+        - /tmp/apache2/logs:/var/log/apache2
