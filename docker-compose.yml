@@ -95,3 +95,6 @@ services:
         - redis
       volumes:
         - /tmp/apache2/logs:/var/log/apache2
+
+volumes:
+  elasticsearch-data:
